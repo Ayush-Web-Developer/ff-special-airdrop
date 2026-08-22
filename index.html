@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FF Diamond Event Top-Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Free Fire authentic styling */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .ff-gradient { background: linear-gradient(90deg, #ff9900, #ff5500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .ff-bg { background: linear-gradient(90deg, #ff9900, #ff5500); }
+        .terminal-text { text-shadow: 0 0 5px rgba(255, 165, 0, 0.8); }
+        
+        /* Custom token spinning animation */
+        @keyframes flipToken {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        .animate-token { animation: flipToken 1s infinite linear; }
+        
+        /* Remove arrows from number inputs for a cleaner look */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* Falling items animation */
+        @keyframes fallAndSpin {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+        .falling-item {
+            position: fixed;
+            z-index: -5; /* Keeps it behind the UI boxes but over the background */
+            pointer-events: none;
+            user-select: none;
+            animation: fallAndSpin linear forwards;
+            filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5));
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- BACKGROUND JPG IMAGE -->
+    <img src="background.jpg" class="absolute top-0 left-0 w-full h-full object-cover -z-10 opacity-60" alt="bg">
+    <div class="absolute top-0 left-0 w-full h-full bg-black/40 -z-10"></div>
+
+    <!-- SCREEN 1: THE BAIT -->
+    <div id="screen-1" class="w-full max-w-md bg-gray-900/90 backdrop-blur-md rounded-2xl shadow-2xl shadow-orange-500/30 border border-gray-700 p-6 transition-all relative">
+        
+        <!-- AIRDROP PNG IMAGE -->
+        <img src="airdrop.png" alt="Airdrop Box" class="w-32 h-auto mx-auto mb-2 drop-shadow-2xl animate-bounce">
+
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-extrabold ff-gradient uppercase tracking-wider animate-pulse">Special Airdrop</h1>
+            <p class="text-gray-300 text-sm mt-2">Claim your exclusive event diamonds!</p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-bold text-gray-300 mb-1">Player UID</label>
+                <input type="number" id="uid" placeholder="e.g. 123456789" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-orange-500 shadow-inner">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold text-gray-300 mb-1">Current Account Level</label>
+                <select id="level" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-orange-500 shadow-inner">
+                    <option value="low">Level 1 - 19</option>
+                    <option value="mid">Level 20 - 49</option>
+                    <option value="high">Level 50+</option>
+                </select>
+            </div>
+
+            <button onclick="startInjection()" class="w-full ff-bg hover:opacity-90 text-white font-bold py-3 rounded-lg mt-4 uppercase tracking-widest shadow-lg transform active:scale-95 transition-transform">
+                Connect Account
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: FAKE VERIFICATION -->
+    <div id="screen-2" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-6 text-center">
+        <h2 class="text-xl font-bold text-orange-500 mb-4 animate-pulse">Syncing with Garena Servers...</h2>
+        <div class="bg-black rounded-lg p-4 font-mono text-left text-xs sm:text-sm text-green-400 h-40 overflow-hidden relative border border-gray-700 shadow-inner">
+            <div id="terminal" class="space-y-2 terminal-text"></div>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: FAKE GATEWAY -->
+    <div id="screen-3" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-6">
+        <h2 class="text-2xl font-extrabold text-center text-white mb-2">Payment Gateway</h2>
+        <p class="text-center text-gray-400 mb-6 text-sm">Secure Token Transaction</p>
+        
+        <div class="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-600 shadow-inner">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-gray-300">Diamonds to Receive:</span>
+                <span id="diamond-amt" class="text-xl font-bold text-blue-400">0 💎</span>
+            </div>
+            <hr class="border-gray-700 my-3">
+            <div class="flex justify-between items-center">
+                <span class="text-gray-300">Money Required:</span>
+                <span id="token-amt" class="text-xl font-bold text-orange-500">0 🪙</span>
+            </div>
+        </div>
+
+        <button onclick="goToPinScreen()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg uppercase tracking-widest shadow-lg shadow-blue-500/50 transform active:scale-95 transition-transform">
+            Pay with UPI (PHONEPAY)
+        </button>
+    </div>
+
+    <!-- SCREEN 4: PIN VERIFICATION -->
+    <div id="screen-pin" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-6">
+        <h2 class="text-2xl font-bold text-center text-white mb-2">Verification Required</h2>
+        <p class="text-center text-gray-400 mb-6 text-sm">Enter your 6-digit UPI PIN to confirm your payment</p>
+        
+        <div class="flex justify-center gap-2 mb-6">
+            <!-- 6 White boxes with blue text -->
+            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+        </div>
+
+        <button onclick="processPayment()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg uppercase tracking-widest shadow-lg transform active:scale-95 transition-transform">
+            Confirm Payment
+        </button>
+    </div>
+
+    <!-- SCREEN 5: LOADING TOKEN PAYMENT -->
+    <div id="screen-loading" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-8 text-center">
+        <div class="text-6xl mb-6 animate-token drop-shadow-2xl">🪙</div>
+        <h2 class="text-xl font-bold text-orange-500 mb-2 animate-pulse">Authenticating & Deducting...</h2>
+        <p class="text-gray-400 text-sm">Please do not close this window or lock your screen.</p>
+    </div>
+
+    <!-- SCREEN 6: PUNCHLINE -->
+    <div id="screen-punchline" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 text-center border-2 border-green-500">
+        <div class="text-6xl mb-4 transform hover:scale-110 transition-transform">✅</div>
+        <h2 class="text-2xl font-bold text-green-400 mb-4">Payment Successful!</h2>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-600 shadow-inner">
+            <p class="text-lg text-white font-medium mb-4">
+                Diamond will be given within 5 working days from Garena free fire after checking your details! thank you for purchase FF
+            </p>
+            <hr class="border-gray-700 my-3">
+            <p class="text-sm text-orange-400 font-bold uppercase tracking-wider">
+                Thank you for participating in event!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const rewards = {
+            'low': { diamonds: 450, tokens: 99 },
+            'mid': { diamonds: 850, tokens: 59 },
+            'high': { diamonds: 1200, tokens: 29 }
+        };
+
+        function switchScreen(hideId, showId) {
+            document.getElementById(hideId).classList.add('hidden');
+            document.getElementById(showId).classList.remove('hidden');
+        }
+
+        // Auto-focus logic for the PIN boxes
+        const pinInputs = document.querySelectorAll('.pin-box');
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                // If a number is typed, jump to the next box
+                if (this.value.length === 1 && index < pinInputs.length - 1) {
+                    pinInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', function(e) {
+                // If backspace is pressed on an empty box, jump back
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
+
+        function startInjection() {
+            const uid = document.getElementById('uid').value;
+            if(!uid) return alert("Please enter Player UID first!");
+
+            switchScreen('screen-1', 'screen-2');
+            
+            const terminal = document.getElementById('terminal');
+            const messages = [
+                "[SYSTEM] Establishing secure connection...",
+                "[SYSTEM] Bypassing region lock...",
+                `[SERVER] Locating UID: ${uid}... Found!`,
+                "[INJECT] Calculating veteran status...",
+                "[INJECT] Preparing Diamond packet...",
+                "[SYSTEM] Redirecting to secure gateway..."
+            ];
+
+            let delay = 0;
+            terminal.innerHTML = ''; // Clear previous if any
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    terminal.innerHTML += `<p>> ${msg}</p>`;
+                }, delay);
+                delay += 800; 
+            });
+
+            setTimeout(() => {
+                const level = document.getElementById('level').value;
+                document.getElementById('diamond-amt').innerText = rewards[level].diamonds + " 💎";
+                document.getElementById('token-amt').innerText = rewards[level].tokens + " 🪙";
+                switchScreen('screen-2', 'screen-3');
+            }, delay + 500);
+        }
+
+        function goToPinScreen() {
+            switchScreen('screen-3', 'screen-pin');
+            // Auto focus the first box
+            setTimeout(() => pinInputs[0].focus(), 100);
+        }
+
+        function processPayment() {
+            switchScreen('screen-pin', 'screen-loading');
+            
+            // Wait 3 seconds, then show the punchline
+            setTimeout(() => {
+                switchScreen('screen-loading', 'screen-punchline');
+            }, 3000);
+        }
+        // Miniature Diamonds and Guns Falling Effect
+        function startFallingItems() {
+            const emojis = ['💎', '🪙'];
+            
+            setInterval(() => {
+                const item = document.createElement('div');
+                item.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                item.classList.add('falling-item');
+                
+                // Randomize horizontal position, speed, and size
+                item.style.left = Math.random() * 100 + 'vw';
+                item.style.animationDuration = Math.random() * 4 + 4 + 's'; // Falls between 3 to 6 seconds
+                item.style.fontSize = (Math.random() * 2 + 2) + 'rem'; // Random sizes
+                
+                document.body.appendChild(item);
+                
+                // Remove the element after it falls off screen to prevent lag
+                setTimeout(() => {
+                    item.remove();
+                }, 10000);
+            }, 2500); // Spawns a new item every 400 milliseconds
+        }
+
+        // Start the rain as soon as the page loads
+        window.onload = startFallingItems;
+    </script>
+</body>
+</html>
