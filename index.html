@@ -206,12 +206,42 @@
         </button>
     </div>
 
-    <!-- SCREEN 5: LOADING TOKEN PAYMENT -->
-    <div id="screen-loading" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700 p-8 text-center">
-        <div class="text-6xl mb-6 animate-token drop-shadow-2xl">🪙</div>
-        <h2 class="text-xl font-bold text-orange-500 mb-2 animate-pulse">Authenticating & Deducting...</h2>
-        <p class="text-gray-400 text-sm">Please do not close this window or lock your screen.</p>
+        <!-- SCREEN 5: REALISTIC LOADING TOKEN PAYMENT -->
+    <div id="screen-loading" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 p-8 text-center relative overflow-hidden">
+        
+        <!-- Fake Security Header -->
+        <div class="flex justify-center items-center gap-2 mb-8 text-green-400 text-xs font-mono uppercase tracking-widest opacity-80">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <span>256-Bit Secure Connection</span>
+        </div>
+
+        <!-- Modern Glowing CSS Spinner -->
+        <div class="relative w-24 h-24 mx-auto mb-6">
+            <!-- Dark outer track -->
+            <div class="absolute inset-0 rounded-full border-4 border-gray-800"></div>
+            <!-- Spinning glowing ring -->
+            <div class="absolute inset-0 rounded-full border-4 border-orange-500 border-t-transparent animate-spin shadow-[0_0_15px_rgba(249,115,22,0.4)]"></div>
+            <!-- Pulsing Inner Diamond Shape -->
+            <div class="absolute inset-0 flex items-center justify-center animate-pulse">
+                <svg class="w-8 h-8 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 12l10 10 10-10L12 2zm0 14.5L5.5 12 12 5.5 18.5 12 12 16.5z"/>
+                </svg>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-white mb-2">Processing...</h2>
+        
+        <!-- This text will change dynamically via JavaScript -->
+        <p class="text-orange-400 text-sm font-medium mb-6 animate-pulse" id="loading-text">Authenticating Token Balance...</p>
+        
+        <!-- Authentic Warning Box -->
+        <div class="bg-gray-800/60 rounded-lg p-3 border border-gray-700/50 shadow-inner">
+            <p class="text-gray-400 text-xs">
+                Please do not close this window or press the back button. Doing so may result in token loss.
+            </p>
+        </div>
     </div>
+    
 
         <!-- SCREEN 6: MODERN PUNCHLINE -->
     <div id="screen-punchline" class="hidden w-full max-w-md bg-gray-900/95 backdrop-blur-xl rounded-2xl p-6 text-center glow-success animate-pop relative overflow-hidden">
@@ -317,14 +347,23 @@
             setTimeout(() => pinInputs[0].focus(), 100);
         }
 
-        function processPayment() {
+                function processPayment() {
+            // Switch to the new loading screen
             switchScreen('screen-pin', 'screen-loading');
             
-            // Wait 3 seconds, then show the punchline
+            // Dynamically change the text to simulate real server steps
+            const loadingText = document.getElementById('loading-text');
+            
+            setTimeout(() => { loadingText.innerText = "Generating Transaction Hash..."; }, 1000);
+            setTimeout(() => { loadingText.innerText = "Securing Garena Node..."; }, 2000);
+            setTimeout(() => { loadingText.innerText = "Finalizing Token Deduction..."; }, 3000);
+
+            // Extended the timer to 4 seconds to build maximum suspense before the punchline!
             setTimeout(() => {
                 switchScreen('screen-loading', 'screen-punchline');
-            }, 3000);
+            }, 4000);
         }
+
         // Miniature Diamonds and Guns Falling Effect
         function startFallingItems() {
             const emojis = ['💎', '🪙'];
