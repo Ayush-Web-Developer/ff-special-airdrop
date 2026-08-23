@@ -196,14 +196,20 @@
             switchScreen('screen-1', 'screen-2');
             
             const terminal = document.getElementById('terminal');
+                        // Capture the new inputs
+            const pName = document.getElementById('playerName').value || "Player";
+            const pLoc = document.getElementById('playerLoc').value || "Unknown Location";
+
+            // Personalized terminal sequence
             const messages = [
                 "[SYSTEM] Establishing secure connection...",
-                "[SYSTEM] Bypassing region lock...",
+                `[SYSTEM] Pinging server from ${pLoc}...`,
                 `[SERVER] Locating UID: ${uid}... Found!`,
+                `[INJECT] Target Confirmed: ${pName}`,
                 "[INJECT] Calculating veteran status...",
-                "[INJECT] Preparing Diamond packet...",
                 "[SYSTEM] Redirecting to secure gateway..."
             ];
+
 
             let delay = 0;
             terminal.innerHTML = ''; // Clear previous if any
